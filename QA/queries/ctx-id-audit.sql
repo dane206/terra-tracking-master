@@ -1,17 +1,16 @@
--- =========================================================
--- QUERY: LEGACY-ctx_id_audit
--- STATUS: TODO (Stage 2)
--- PURPOSE: Audit ctx_id continuity across session and user flows
--- OWNER: Terra Tracking
--- NOTES:
---   - Not part of ingestion guardrails
---   - To be implemented after marts/staging stabilize
--- =========================================================
+-- ============================================================
+-- Query: DEV-QA-ctx_id_audit
+-- Purpose: Validate ctx_id population across recent events
+-- Owner: Terra Data
+-- Last Updated: 2026-02-25
+-- ============================================================
 
--- TODO:
--- Validate ctx_id persistence across:
---   • web pixel → checkout pixel
---   • multi-page sessions
---   • returning visitors
-
-SELECT 'NOT_IMPLEMENTED' AS status;
+SELECT
+  COUNT(*) AS row_count,
+  COUNTIF(JSON_VALUE(raw, '$.ctx_id') IS NULL) AS missing_ctx,
+  SAFE_DIVIDE(
+    COUNTIF(JSON_VALUE(raw, '$.ctx_id') IS NULL),
+    COUNT(*)
+  ) AS pct_missing_ctx
+FROM `terra-analytics-dev.raw.events_raw`
+WHERE received_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY);

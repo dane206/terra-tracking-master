@@ -1,0 +1,46 @@
+{% if customer %}
+<script id="10-terra-user-authenticated">
+(function () {
+  if (window.__terra_user_authenticated_ran__) return;
+  window.__terra_user_authenticated_ran__ = true;
+
+  // Required Terra runtime
+  if (!window.terraPushEvent || !window.terraWhenReady) return;
+
+  var shopifyUserId = {{ customer.id | json }};
+  if (!shopifyUserId) return;
+
+  window.terraWhenReady(function (ctx) {
+
+    window.terraPushEvent('terra_user_authenticated', {
+      // ─────────────────────────────
+      // Identity spine (required)
+      // ─────────────────────────────
+      ctx_version: ctx.ctx_version,
+      ctx_id: ctx.ctx_id,
+      iso_week: ctx.iso_week,
+      device_type: ctx.device_type,
+
+      th_vid: ctx.th_vid,
+      session_key: ctx.session_key,
+      session_start: ctx.session_start,
+
+      // 🔐 Auth promotion
+      shopify_user_id: String(shopifyUserId),
+
+      // ─────────────────────────────
+      // Page context (Terra standard)
+      // ─────────────────────────────
+      page_hostname: ctx.page_hostname,
+      page_location: ctx.page_location,
+      page_path: ctx.page_path,
+      page_title: ctx.page_title,
+      page_referrer: ctx.page_referrer,
+      page_type: ctx.page_type
+    });
+
+  });
+
+})();
+</script>
+{% endif %}

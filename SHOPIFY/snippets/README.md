@@ -133,24 +133,36 @@ You are now in a clean state.
 # ✅ Theme render layer layout
 
 ```liquid
-{% render '00-terra-gtm-loader' %}
-{% render '01-terra-attribution-ready' %}
-{% render '02-terra-identity-ssot' %}
-{% render '03-terra-item-utils' %}
-{% render '04-terra-checkout-bridge' %}
-{% render '05-terra-page-view-producer' %}
+    {% render '00-terra-gtm-loader' %}
+    {% render '01-terra-attribution-ready' %}
+    {% render '02-terra-identity-ssot' %}
+    {% render '03-terra-item-utils' %}
+    {% render '04-terra-checkout-bridge' %}
+    {% render '05-terra-page-view-producer' %}
 
-{% if request.page_type == 'product' %}
-  {% render '06-terra-view-item-producer' %}
-  {% render '07-terra-add-to-cart-producer' %}
-{% endif %}
+    {% if request.page_type == 'product' %}
+      {% render '06-terra-view-item-producer' %}
+      {% render '07-terra-add-to-cart-producer' %}
+    {% endif %}
 
-{% if request.page_type == 'collection' %}
-  {% render '08-terra-view-item-list-collection' %}
-{% endif %}
+    {% if request.page_type == 'collection' %}
+      {% render '08-terra-view-item-list-collection' %}
+    {% endif %}
 
-{% if request.page_type == 'search' %}
-  {% render '09-terra-view-item-list-search' %}
-{% endif %}
+    {% if request.page_type == 'search' %}
+      {% render '09-terra-view-item-list-search' %}
+    {% endif %}
+
+    {% render '10-terra-user-authenticated' %}
 ```
 
+🧠 Practical Terra rule
+
+Priority order (final):
+
+th_vid → primary identity spine
+shopify_user_id → authenticated identity
+terra_ga_cid → analytics bridge
+shopify_client_id → opportunistic enrichment
+
+That last one is exactly where it belongs.

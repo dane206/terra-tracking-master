@@ -1,0 +1,53 @@
+<script id="05-terra-page-view-producer">
+window.terraWhenReady(function(ctx) {
+
+  if (!window.terraPushEvent) return;
+
+  if (window.__terra_page_view_ran__) return;
+  window.__terra_page_view_ran__ = true;
+
+  window.terraPushEvent('page_view', {
+    ctx_version: ctx.ctx_version,
+    ctx_id: ctx.ctx_id,
+    iso_week: ctx.iso_week,
+    device_type: ctx.device_type,
+
+    th_vid: ctx.th_vid,
+    session_key: ctx.session_key,
+    session_start: ctx.session_start,
+
+    terra_ga_cid: ctx.terra_ga_cid,
+    terra_ga_sid: ctx.terra_ga_sid,
+    terra_ga_sn: ctx.terra_ga_sn,
+
+    terra_ft_source: ctx.terra_ft_source,
+    terra_ft_medium: ctx.terra_ft_medium,
+    terra_ft_campaign: ctx.terra_ft_campaign,
+    terra_ft_content: ctx.terra_ft_content,
+    terra_ft_term: ctx.terra_ft_term,
+    terra_ft_id: ctx.terra_ft_id,
+
+    terra_lt_source: ctx.terra_lt_source,
+    terra_lt_medium: ctx.terra_lt_medium,
+    terra_lt_campaign: ctx.terra_lt_campaign,
+    terra_lt_content: ctx.terra_lt_content,
+    terra_lt_term: ctx.terra_lt_term,
+    terra_lt_id: ctx.terra_lt_id,
+
+    terra_gclid: ctx.terra_gclid,
+    terra_gbraid: ctx.terra_gbraid,
+    terra_wbraid: ctx.terra_wbraid,
+    terra_msclkid: ctx.terra_msclkid,
+    terra_fbclid: ctx.terra_fbclid,
+    terra_ttclid: ctx.terra_ttclid,
+
+    page_hostname: ctx.page_hostname,
+    page_location: ctx.page_location,
+    page_path: ctx.page_path,
+    page_title: ctx.page_title,
+    page_referrer: ctx.page_referrer,
+    page_type: ctx.page_type
+  });
+
+});
+</script>

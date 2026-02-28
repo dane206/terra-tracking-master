@@ -1,4 +1,4 @@
-console.log("TERRA_CHECKOUT_PIXEL_V4.9_ACTIVE");
+console.log("TERRA_CHECKOUT_PIXEL_V5.0_ACTIVE");
 
 /* ================== ENV ================== */
 
@@ -8,7 +8,7 @@ var ENDPOINT = "https://pixel-ingest-prod-279703303694.us-central1.run.app/v2/tr
 
 /* ==================  RUNTIME ================== */
 
-console.log("PROD PIXEL RUNTIME MARKER v4.9 —", Date.now());
+console.log("PROD PIXEL RUNTIME MARKER v5.0 —", Date.now());
 
 window.__terra_prod_runtime_probe__ = {
   ts: Date.now(),

@@ -6,7 +6,7 @@ var TERRA_ENV = "prod"; // "dev" | "prod"
 var ENDPOINT = "https://pixel-ingest-prod-279703303694.us-central1.run.app/v2/track";
 /* var ENDPOINT = "https://pixel-ingest-dev-600339193870.us-central1.run.app/v2/track"; */
 
-/* ==================  RUNTIME ================== */
+/* ================== RUNTIME ================== */
 
 console.log("PROD PIXEL RUNTIME MARKER v5.0 —", Date.now());
 
@@ -100,6 +100,48 @@ function post(payload) {
   } catch (e) {}
 }
 
+function normalizeGaClientId(v) {
+  if (!v || typeof v !== "string") return null;
+
+  // GA cookie format: GA1.1.1234567890.1234567890
+  if (v.indexOf("GA") === 0) {
+    var parts = v.split(".");
+    if (parts.length >= 4) {
+      return parts[2] + "." + parts[3];
+    }
+  }
+
+  return v;
+}
+
+function resolveGaClientId(attrs) {
+  // PRIMARY — your mirrored attributes (correct path)
+  var cid = getAttrAny(
+    ["ga_client_id", "ga4_client_id", "terra_ga_cid"],
+    attrs
+  );
+
+  if (cid) return normalizeGaClientId(cid);
+
+  // FALLBACK — rare safety net only
+  try {
+    var gaCookie = getCookie("_ga");
+    if (gaCookie) return normalizeGaClientId(gaCookie);
+  } catch (e) {}
+
+  return null;
+}
+
+function resolveGaClientIdFromCookies() {
+  try {
+    var gaCookie = getCookie("_ga");
+    if (!gaCookie) return null;
+    return normalizeGaClientId(gaCookie);
+  } catch (e) {
+    return null;
+  }
+}
+
 /* ================== TERRA CTX FROM ATTRS ================== */
 
 function getTerraCtx(attrs) {
@@ -179,10 +221,7 @@ function basePayload(event_name, ev) {
 
   /* ========================================================= */
 
-  var ga_client_id = getAttrAny(
-    ["ga_client_id", "ga4_client_id", "terra_ga_cid", "_ga"],
-    attrs
-  );
+  var ga_client_id = resolveGaClientId(attrs);
   var ga_session_id = getAttrAny(
     ["ga_session_id", "ga4_session_id", "terra_ga_sid"],
     attrs
@@ -247,6 +286,10 @@ function storefrontBasePayload(event_name, ev) {
     event_name: event_name,
     event_id: ev && ev.id ? String(ev.id) : uuidv4(),
     event_time: ev && ev.timestamp ? ev.timestamp : new Date().toISOString(),
+
+    ga_client_id: resolveGaClientIdFromCookies(),  // ← NEW (required)
+
+    shopify_client_id: getShopifyClientId(ev), // ← ADD THIS
 
     ctx_id: terra.ctx_id,
     th_vid: terra.th_vid,

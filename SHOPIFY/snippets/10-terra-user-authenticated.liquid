@@ -13,24 +13,44 @@
   window.terraWhenReady(function (ctx) {
 
     window.terraPushEvent('terra_user_authenticated', {
-      // ─────────────────────────────
-      // Identity spine (required)
-      // ─────────────────────────────
+      /* ─────────────────────────────
+         Terra context
+      ───────────────────────────── */
+
       ctx_version: ctx.ctx_version,
       ctx_id: ctx.ctx_id,
       iso_week: ctx.iso_week,
       device_type: ctx.device_type,
 
+      /* ─────────────────────────────
+         Terra identity spine
+      ───────────────────────────── */
+
       th_vid: ctx.th_vid,
       session_key: ctx.session_key,
       session_start: ctx.session_start,
 
-      // 🔐 Auth promotion
+      /* ─────────────────────────────
+         GA bridge identity
+      ───────────────────────────── */
+
+      terra_ga_cid: ctx.terra_ga_cid,
+      terra_ga_sid: ctx.terra_ga_sid,
+      terra_ga_sn: ctx.terra_ga_sn,
+
+      /* ─────────────────────────────
+         Auth promotion
+      ───────────────────────────── */
+
       shopify_user_id: String(shopifyUserId),
 
-      // ─────────────────────────────
-      // Page context (Terra standard)
-      // ─────────────────────────────
+      /* GA4 stitching */
+      user_id: String(shopifyUserId),
+
+      /* ─────────────────────────────
+         Page context
+      ───────────────────────────── */
+
       page_hostname: ctx.page_hostname,
       page_location: ctx.page_location,
       page_path: ctx.page_path,

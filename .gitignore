@@ -1,5 +1,9 @@
 # macOS
 .DS_Store
 
+# Node
+node_modules/
+dist/
+
 # Local editor helpers
 runtime/shopify/snippets/*.liquid.js

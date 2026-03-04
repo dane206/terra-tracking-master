@@ -1,100 +1,105 @@
-✅ File 00 — 00-terra-gtm-loader.liquid
-
-Status: locked
-
-What was verified:
-
-Queue works pre-GTM
-Flush works post-GTM
-Identity deferral is safe
-Closure bug is fixed
-Payload override protection is in place
-Idempotency guard present
-Matches prod behavior
-
-No further changes required.
-
-✅ File 01 — 01-terra-attribution-ready.liquid
-
-Status: locked
+# `00-terra-gtm-loader.liquid`
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 What was verified:
+- Queue works pre-GTM
+- Flush works post-GTM
+- Identity deferral is safe
+- Closure bug is fixed
+- Payload override protection is in place
+- Idempotency guard present
 
-URL params normalize to null (not empty string)
-Cookies never written with empty values
-First-touch write-once logic correct
-Last-touch overwrite logic correct
-Click-only fallback implemented
-Landing/referrer always set once
-Root domain logic correct for:
-.terrahealthessentials.com
-subdomains
-safe fallback on *.myshopify.com
-DataLayer push only fires when attribution signal exists
-Matches prod traces
+# `01-terra-attribution-ready.liquid`
+## 🔒 status: locked.
+## ✅ no further changes required.
 
-No structural issues remain.
+Purpose:
+- Persist FIRST touch (`terra_ft_*`) for long-term attribution; first-touch write-once logic correct
+- Persist LAST touch (`terra_lt_*`) for last campaign/ad they engaged; last-touch overwrite logic correct
+- Persist click IDs (`terra_gclid`, `terra_fbclid`, `terra_ttclid`, etc.)
+- Persist landing page + referrer once (`terra_landing_page`, `terra_referrer`)
 
-✅ File 02 - 02-terra-identity-ssot.liquid
+Key Guarantees:
+- Cookie writes are guarded (never writes empty values)
+- URL params are normalized to null (never "")
+- Supports click-only traffic via source/medium synthesis
+- No dependency on ctx (cookie-only layer)
+- Works across ALL terrahealthessentials.com subdomains via `Domain=.terrahealthessentials.com`; root domain logic correct
+- Safe fallback to host-only cookies on non-terra hosts (e.g., *.myshopify.com)
 
-Status: FINAL (prod canonical)
+Load Order:
+- Must run early (before identity ssot reads cookies into ctx)
+- dataLayer push only fires when attribution signal exists
+- This file is the single source of truth (`attribution ssot`) for terra attribution cookies.
 
-Your current prod version correctly has:
+# `02-terra-identity-ssot.liquid`
+## 🔒 status: locked.
+## ✅ no further changes required.
 
-hardened session recovery
-cookie mirror for Shopify pixel
-correct ensure() behavior
-ctx cookie mirror
-terraWhenReady present
-identity fired through terraPushEvent
-full ctx contract intact
+Current version correctly has:
+- hardened session recovery
+- cookie mirror for Shopify pixel
+- correct `ensure()` behavior
+- `ctx cookie` mirror
+- `terraWhenReady` present
+- identity fired through `terraPushEvent`
+- full `ctx contract` intact
+- This file is the single source of truth (`identity ssot`) for terra identity cookies.
 
-No changes required.
+Terra identity stitching rule final order of priority:
+- zero identity drift from storefront → checkout → purchase
+- 2/28/26 fully intact; full funnel maintained
+✔ `th_vid` → primary identity spine
+✔ `shopify_customer_id` → authenticated identity
+✔ `terra_ga_cid` → analytics bridge
+✔ `shopify_client_id` → opportunistic enrichment; exactly where it belongs
+✔ `ctx_id` → context id
+✔ `session_key` → terra session identifier
+✔ `user_id` → `shopify_customer_id`
 
-# ✅ USER-SCOPED (3 — correct)
+# ga4 user-scoped dimensions (3)
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 Keep only:
-
-* `device_type`
-* `shopify_user_id`
+- correct for Terra identity model.
 * `th_vid`
+* `user_id` → `shopify_customer_id`
+* `device_type`
 
-**Status:** correct for Terra identity model.
-
----
-
-# ✅ ITEM-SCOPED (3 — required)
+# ga4 item-scoped dimensions (3)
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 Keep:
-
+- correct for Shopify canonical item structure.
 * `item_group_id`
 * `sku`
 * `variant_id`
 
-**Status:** correct for Shopify canonical item structure.
+# ga4 event-scoped dimensions (terra core)
+## 🔒 status: locked.
+## ✅ no further changes required.
 
----
-
-# ✅ EVENT-SCOPED (Terra core)
-
-## Identity / session
+# context ssot + session key
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 Keep:
-
+* `coupon`
 * `ctx_id`
 * `event_id`
-* `session_key`
 * `iso_week`
 * `page_type`
+* `session_key`
 * `transaction_id`
-* `coupon`
 
----
-
-## Attribution (FT/LT backbone)
+# attribution (terra ft/lt backbone)
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 Keep:
-
 * `terra_ft_source`
 * `terra_ft_medium`
 * `terra_ft_campaign`
@@ -102,35 +107,26 @@ Keep:
 * `terra_lt_medium`
 * `terra_lt_campaign`
 
----
-
-# ✅ Expected totals
+# strategic note
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 You should now have:
-
-* **User-scoped:** 3
-* **Item-scoped:** 3
-* **Event-scoped:** 13
-
-**Grand total: 19 custom dimensions**
-
----
-
-# ✅ Strategic note
+* **user-scoped:** 3
+* **item-scoped:** 3
+* **event-scoped:** 13
+- You are now in a clean state.
 
 This set is:
-
 * minimal
 * non-redundant
 * aligned to your Terra SSOT
 * safe for long-term GA4 limits
 * compatible with your BigQuery-first strategy
 
-You are now in a clean state.
-
----
-
-# ✅ Theme render layer layout
+# theme render-layer layout
+## 🔒 status: locked.
+## ✅ no further changes required.
 
 ```liquid
     {% render '00-terra-gtm-loader' %}
@@ -155,14 +151,3 @@ You are now in a clean state.
 
     {% render '10-terra-user-authenticated' %}
 ```
-
-🧠 Practical Terra rule
-
-Priority order (final):
-
-th_vid → primary identity spine
-shopify_user_id → authenticated identity
-terra_ga_cid → analytics bridge
-shopify_client_id → opportunistic enrichment
-
-That last one is exactly where it belongs.

@@ -1,4 +1,3 @@
-{% if request.page_type == 'search' %}
 <script id="09-terra-view-item-list-search">
 (function () {
   if (window.__terra_view_item_list_search_ran__) return;
@@ -109,12 +108,10 @@
       page_referrer: ctx.page_referrer,
       page_type: ctx.page_type,
 
-      search_term: search_term,
-      result_count: result_count
+      search_term: search_term
     });
 
   });
 
 })();
 </script>
-{% endif %}

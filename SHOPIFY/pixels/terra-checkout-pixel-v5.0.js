@@ -1,4 +1,5 @@
-console.log("TERRA_CHECKOUT_PIXEL_V5.0_ACTIVE");
+var TERRA_CHECKOUT_PIXEL_VERSION = "5.0";
+console.log("TERRA_CHECKOUT_PIXEL_v" + TERRA_CHECKOUT_PIXEL_VERSION + "_ACTIVE" + " —", Date.now());
 
 /* ================== ENV ================== */
 
@@ -8,9 +9,9 @@ var ENDPOINT = "https://pixel-ingest-prod-279703303694.us-central1.run.app/v2/tr
 
 /* ================== RUNTIME ================== */
 
-console.log("PROD PIXEL RUNTIME MARKER v5.0 —", Date.now());
+console.log("TERRA_CHECKOUT_PIXEL_v" + TERRA_CHECKOUT_PIXEL_VERSION + "_RUNTIME_MARKER" + " —", Date.now());
 
-window.__terra_prod_runtime_probe__ = {
+window.__terra_runtime_probe__ = {
   ts: Date.now(),
   env: TERRA_ENV
 };
@@ -287,9 +288,13 @@ function storefrontBasePayload(event_name, ev) {
     event_id: ev && ev.id ? String(ev.id) : uuidv4(),
     event_time: ev && ev.timestamp ? ev.timestamp : new Date().toISOString(),
 
-    ga_client_id: resolveGaClientIdFromCookies(),  // ← NEW (required)
-
+    user_id: customerId || null,
+    shopify_customer_id: customerId || null,
     shopify_client_id: getShopifyClientId(ev), // ← ADD THIS
+
+    ga_client_id: resolveGaClientIdFromCookies(),  // ← NEW (required)
+    ga_session_id: getCookie("ga_session_id"), // ← NEW (optional)
+    ga_session_number: getCookie("ga_session_number"), // ← NEW (optional)
 
     ctx_id: terra.ctx_id,
     th_vid: terra.th_vid,

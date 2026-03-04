@@ -11,10 +11,12 @@ var ENDPOINT = "https://pixel-ingest-prod-279703303694.us-central1.run.app/v2/tr
 
 console.log("TERRA_CHECKOUT_PIXEL_v" + TERRA_CHECKOUT_PIXEL_VERSION + "_RUNTIME_MARKER" + " —", Date.now());
 
-window.__terra_runtime_probe__ = {
-  ts: Date.now(),
-  env: TERRA_ENV
-};
+if (typeof window !== "undefined") {
+  window.__terra_runtime_probe__ = {
+    ts: Date.now(),
+    env: TERRA_ENV
+  };
+}
 
 /* ================== UTILS ================== */
 
@@ -281,6 +283,12 @@ function basePayload(event_name, ev) {
 
 function storefrontBasePayload(event_name, ev) {
   var terra = getTerraFromWindow();
+
+  var customerId = null;
+
+  if (ev && ev.context && ev.context.customer && ev.context.customer.id) {
+  customerId = "" + ev.context.customer.id;
+  }
 
   return {
     data_source: "shopify_web_pixel",

@@ -1,5 +1,5 @@
+# macOS
+.DS_Store
 
 # Local editor helpers
-SHOPIFY/snippets/*.liquid.js
-SHOPIFY/.DS_Store
-.DS_Store
+runtime/shopify/snippets/*.liquid.js

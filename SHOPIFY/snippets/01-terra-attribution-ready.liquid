@@ -61,7 +61,7 @@
     if (!val) return;
 
     var p = [];
-    p.push(name + "=" + val);
+    p.push(name + "=" + encodeURIComponent(val));
     p.push("Path=/");
 
     var d = cookieDomainForHost();
@@ -151,6 +151,17 @@
 
   var hasClick = anyNonEmpty(click);
 
+  function hasClickCookie() {
+    return !!(
+      getCookie("terra_gclid") ||
+      getCookie("terra_gbraid") ||
+      getCookie("terra_wbraid") ||
+      getCookie("terra_msclkid") ||
+      getCookie("terra_fbclid") ||
+      getCookie("terra_ttclid")
+    );
+  }
+
   /* ========================= ALWAYS: landing/referrer once ========================= */
   /* ========================= must not be blocked by early return ========================= */
 
@@ -222,7 +233,7 @@
   /* ========================= update on any attribution signal (UTM or click) ========================= */
   /* ========================= preserves existing values if a field isn't present ========================= */
 
-  if (hasUtm) {
+  if (hasUtm && !hasClick) {
     if (utm.source)   setCookie("terra_lt_source", utm.source, LT_MAX_AGE);
     if (utm.medium)   setCookie("terra_lt_medium", utm.medium, LT_MAX_AGE);
     if (utm.campaign) setCookie("terra_lt_campaign", utm.campaign, LT_MAX_AGE);
